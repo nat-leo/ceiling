@@ -1,6 +1,6 @@
 # FastAPI Monitoring Scaffold
 
-This repository contains a small FastAPI service wired into Prometheus and Grafana with Docker Compose.
+This repository contains a small FastAPI service wired into Prometheus, Grafana, and k6 with Docker Compose.
 
 ## What is included
 
@@ -13,7 +13,7 @@ This repository contains a small FastAPI service wired into Prometheus and Grafa
   - FastAPI on `http://localhost:8000`
   - Prometheus on `http://localhost:9090`
   - Grafana on `http://localhost:3000`
-- Grafana datasource provisioning so Prometheus is available immediately
+- Grafana provisioning so Prometheus and a k6 dashboard are available immediately
 
 ## Start the stack
 
@@ -35,9 +35,18 @@ docker compose up --build
 - Username: `admin`
 - Password: `admin`
 
+## Provisioned Grafana
+
+Grafana starts with:
+
+- a preconfigured Prometheus datasource
+- a provisioned `Load Testing/k6 Overview` dashboard from files in `telemetry/grafana`
+
+No Grafana UI setup is required.
+
 ## Load testing
 
-This scaffold includes a `k6` load test that ramps concurrent virtual users until the app starts failing or latency degrades.
+This scaffold includes a `k6` load test that ramps concurrent virtual users until the app starts failing or latency degrades. The `k6` container streams metrics to Prometheus with the official remote-write output, and Grafana reads those metrics live from Prometheus.
 
 Start the app stack first:
 
@@ -51,6 +60,8 @@ Run the breakpoint test in another terminal:
 docker compose --profile loadtest run --rm k6
 ```
 
+Then open Grafana at `http://localhost:3000` and view `Load Testing / k6 Overview`.
+
 Useful overrides:
 
 ```bash
@@ -58,6 +69,21 @@ docker compose --profile loadtest run --rm \
   -e TARGET_PATH=/healthz \
   -e WAIT_SECONDS=0 \
   k6
+```
+
+The k6 service is preconfigured with:
+
+- `K6_PROMETHEUS_RW_SERVER_URL=http://prometheus:9090/api/v1/write`
+- `K6_PROMETHEUS_RW_TREND_STATS=p(95),p(99),min,max`
+- `K6_PROMETHEUS_RW_STALE_MARKERS=true`
+
+If you run `k6` on the host instead of through Compose, use:
+
+```bash
+K6_PROMETHEUS_RW_SERVER_URL=http://localhost:9090/api/v1/write \
+K6_PROMETHEUS_RW_TREND_STATS=p(95),p(99),min,max \
+K6_PROMETHEUS_RW_STALE_MARKERS=true \
+k6 run -o experimental-prometheus-rw loadtest/breakpoint.js
 ```
 
 The default script:
