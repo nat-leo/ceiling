@@ -17,7 +17,6 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
       - "--web.enable-remote-write-receiver"
-      - "--enable-feature=native-histograms"
     volumes:
       - ./telemetry/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
@@ -51,7 +50,7 @@ services:
     environment:
       BASE_URL: http://app:8000
       K6_PROMETHEUS_RW_SERVER_URL: http://prometheus:9090/api/v1/write
-      K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM: "true"
+      K6_PROMETHEUS_RW_TREND_STATS: p(95),p(99),min,max
       K6_PROMETHEUS_RW_STALE_MARKERS: "true"
     depends_on:
       app:
