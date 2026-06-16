@@ -74,10 +74,3 @@ For fixed concurrency testing, use [loadtest/constant.js](/Users/natleo/Desktop/
 docker compose --profile loadtest run --rm k6 \
   run --vus 100 --duration 30s /scripts/constant.js
 ```
-
-## Next likely additions
-
-- Real readiness checks for databases, Redis, or message brokers
-- Alert rules in Prometheus or Grafana
-- A provisioned dashboard for request rate, latency, and error rate
-- Persistent secret management for Grafana credentials
