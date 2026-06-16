@@ -179,18 +179,13 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 24,
         "x": 0,
         "y": 8
       },
       "id": 3,
       "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
+        "calculate": false,
         "tooltip": {
           "mode": "single",
           "sort": "none"
@@ -203,80 +198,14 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "max(k6_http_req_duration_seconds_p95)",
-          "legendFormat": "p95",
+          "expr": "sum by (le) (increase(k6_http_req_duration_bucket[$__rate_interval]))",
+          "format": "heatmap",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "HTTP Request Duration p95",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "orange",
-                "value": 0.5
-              },
-              {
-                "color": "red",
-                "value": 1
-              }
-            ]
-          },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 8
-      },
-      "id": 4,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "max(k6_http_req_duration_seconds_p99)",
-          "legendFormat": "p99",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "HTTP Request Duration p99",
-      "type": "timeseries"
+      "title": "HTTP Request Duration Buckets",
+      "type": "heatmap"
     },
     {
       "datasource": {
