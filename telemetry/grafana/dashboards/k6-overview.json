@@ -198,7 +198,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (le) (increase(k6_http_req_duration_bucket[$__rate_interval]))",
+          "expr": "sum by (le) (increase(k6_http_req_duration_seconds[$__rate_interval]))",
           "format": "heatmap",
           "range": true,
           "refId": "A"
