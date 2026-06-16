@@ -16,6 +16,7 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-remote-write-receiver"
     volumes:
       - ./telemetry/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
@@ -34,6 +35,7 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana
       - ./telemetry/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./telemetry/grafana/dashboards:/var/lib/grafana/dashboards:ro
     ports:
       - "3000:3000"
     depends_on:
@@ -47,13 +49,20 @@ services:
       - ./loadtest:/scripts:ro
     environment:
       BASE_URL: http://app:8000
+      K6_PROMETHEUS_RW_SERVER_URL: http://prometheus:9090/api/v1/write
+      K6_PROMETHEUS_RW_TREND_STATS: p(95),p(99),min,max
+      K6_PROMETHEUS_RW_STALE_MARKERS: "true"
     depends_on:
       app:
         condition: service_healthy
+      prometheus:
+        condition: service_started
     entrypoint:
       - k6
     command:
       - run
+      - -o
+      - experimental-prometheus-rw
       - /scripts/breakpoint.js
 
 volumes:
