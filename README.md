@@ -74,15 +74,14 @@ docker compose --profile loadtest run --rm \
 The k6 service is preconfigured with:
 
 - `K6_PROMETHEUS_RW_SERVER_URL=http://prometheus:9090/api/v1/write`
-- `K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true`
+- `K6_PROMETHEUS_RW_TREND_STATS=p(95),p(99),min,max`
 - `K6_PROMETHEUS_RW_STALE_MARKERS=true`
-- Prometheus `--enable-feature=native-histograms`
 
 If you run `k6` on the host instead of through Compose, use:
 
 ```bash
 K6_PROMETHEUS_RW_SERVER_URL=http://localhost:9090/api/v1/write \
-K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true \
+K6_PROMETHEUS_RW_TREND_STATS=p(95),p(99),min,max \
 K6_PROMETHEUS_RW_STALE_MARKERS=true \
 k6 run -o experimental-prometheus-rw loadtest/breakpoint.js
 ```
